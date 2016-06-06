@@ -1,0 +1,16 @@
+53d1236e130c9d7de64d16c754af78aa *DESCRIPTION
+aacc56e5e46f617af902c35c765fca3e *NAMESPACE
+e096e6a1370920bb1d41691729e4813b *R/FuranMale.R
+7c956cd253ec451632b7a46fe58bfdf5 *R/corr2d.R
+27a3ab68ae73664731ed3c922a9afc6c *R/corr2d_plot.R
+e1634c339d686495dab0132febf496cd *build/vignette.rds
+12a3f81b3cce6c8c4a55d3c003a8edd1 *data/FuranMale.RData
+25fedfb793b62a75489af4b943f79bb7 *inst/doc/corr2D.R
+36f5683659c6f9af592da8d4d9ea7c73 *inst/doc/corr2D.Rmd
+328659929070331e1e1eda9e1b4b04d5 *inst/doc/corr2D.html
+2090e12769c4682a35a30e1be038fcb2 *man/FuranMale.Rd
+d7e440655e21b59ad99ed6e808d847fd *man/corr2d.Rd
+35a98e02fe7f84f9ad4a56a8d373e6a2 *man/is.corr2d.Rd
+12207cb739b511c5f1285b2d1caa2b49 *man/plot_corr2d.Rd
+7517bed48111cfedd593fb1b55b36f88 *man/plot_corr2din3d.Rd
+36f5683659c6f9af592da8d4d9ea7c73 *vignettes/corr2D.Rmd
