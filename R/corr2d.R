@@ -14,44 +14,47 @@
 #'     of the underlying math see references.
 #'
 #' @param Mat1,Mat2 Numeric matrix containing the data which will be correlated;
-#'     '\emph{Spectral variable}' by columns and '\emph{perturbation}' by rows. For hetero
-#'     correlations \code{Mat1} and \code{Mat2} must have the same number of rows.
-#' @param Ref1,Ref2 Numeric vector containg a single spectrum, which will be
-#'     substracted from \code{Mat1} (or \code{Mat2}, respectivly) to generate dynamic spectra
-#'     for 2D correlation analysis. Defaults to \code{NULL} in which case the \code{colMeans()}
-#'     of \code{Mat1} (or \code{Mat2}, respectivly) is used as reference. The length of \code{Ref1}
+#'     '\emph{spectral variable}' by columns and '\emph{perturbation variables}'
+#'     by rows. For hetero correlations \code{Mat1} and \code{Mat2} must have
+#'     the same number of rows.
+#' @param Ref1,Ref2 Numeric vector containing a single spectrum, which will be
+#'     subtracted from \code{Mat1} (or \code{Mat2}, respectively) to generate dynamic spectra
+#'     for 2D correlation analysis. Default is \code{NULL} in which case the \code{colMeans()}
+#'     of \code{Mat1} (or \code{Mat2}, respectively) is used as reference. The length of \code{Ref1}
 #'     (or \code{Ref2}) needs to be equal to the number of columns in \code{Mat1} (or \code{Mat2}).
 #' @param Wave1,Wave2 Numeric vector containing the spectral variable. Needs to be
-#'     specified if column names of \code{Mat1} (or \code{Mat2}) are undefinied.
-#' @param Time Numeric vector containing the perturbation. If specified, \code{Mat1}
+#'     specified if column names of \code{Mat1} (or \code{Mat2}) are undefined.
+#' @param Time Numeric vector containing the perturbation variables. If specified, \code{Mat1}
 #'     (and \code{Mat2} if given) will be interpolated to \code{N} equally spaced perturbation
-#'     values using \code{Int} to speed up the fft algorithm.
-#' @param Int Function specifing how the dataset will be interpolated to give
-#'     \code{N} equally spaced perturbation values.
-#' @param N Positive, non-zero integer specifing how many equally spaced
-#'     perturbation values should be interpolated using \code{Int}. \code{corr2d}
-#'     is fastest if \code{N} is a power of 2.
-#' @param Norm Numeric vector specifing how the correlation matrix should be
-#'     normalized. Needs to have length \code{(NCOL(Mat1) - 1)}.
+#'     varibales using \code{Int} to speed up the fft algorithm.
+#' @param Int Function specifying how the dataset will be interpolated to give
+#'     \code{N} equally spaced perturbation variables. \code{\link[stats]{splinefun}}
+#'     (default) or \code{\link[stats]{approxfun}} can for example be used.
+#' @param N Positive, non-zero integer specifying how many equally spaced
+#'     perturbation variables should be interpolated using \code{Int}. \code{N}
+#'     should be higher than 4.\code{corr2d} is fastest if \code{N} is a power
+#'     of 2.
+#' @param Norm A number specifying how the correlation matrix should be
+#'     normalized.
 #' @param scaling Positive real number used as exponent when scaling the dataset
 #'     with its standard deviation. Defaults to 0 meaning no scaling. 0.5
 #'     (\emph{Pareto scaling}) and 1 (\emph{Pearson scaling}) are commonly used to enhance
 #'     weak correlations relative to strong correlations.
-#' @param corenumber Positive, non-zero integer specifing how many CPU cores
+#' @param corenumber Positive, non-zero integer specifying how many CPU cores
 #'     should be used for parallel fft computation.
-#' @param preview Logical scalar, should a 3D preview of the synchronous
-#'     correlation spectrum be drawn at the end? Uses \code{\link[rgl]{persp3d}} from \pkg{rgl}
+#' @param preview Logical: Should a 3D preview of the synchronous correlation
+#'     spectrum be drawn at the end? Uses \code{\link[rgl]{persp3d}} from \pkg{rgl}
 #'     package.
 #'     
 #' @return \code{corr2D} returns a list of class "corr2d" containing the complex
 #'     correlation matrix (\code{$FT}), the used reference spectra (\code{$Ref1},
 #'     \code{$Ref2}), the spectral variables (\code{$Wave1}, \code{$Wave2}), the
-#'     (interpolated) perturbation (\code{$Time}) and logical scalar (\code{$Het})
+#'     (interpolated) perturbation variables (\code{$Time}) and logical variable (\code{$Het})
 #'     indicating if homo (\code{FALSE}) or hetero (\code{TRUE}) correlation was done.
 #' 
 #' @references 
-#'     I. Noda, \emph{Appl. Spectrosc.}, 1993, \strong{47}, 1329-1336.\cr
-#'     I. Noda, \emph{Vib. Spectrosc.}, 2012, \strong{60}, 146-153.
+#'     I. Noda (1993) <DOI:10.1366/0003702934067694>\cr
+#'     I. Noda (2012) <DOI:10.1016/j.vibspec.2012.01.006>
 #'     
 #' 
 #' @seealso For plotting of the resulting list containing the 2D correlation
@@ -79,7 +82,7 @@ corr2d <-
         cl <- parallel::makeCluster(corenumber)
         doParallel::registerDoParallel(cl)
         
-        # spectral variable must be incresing, also switch Ref if needed ------
+        # spectral variable must be increasing, also switch Ref if needed ------
         if (is.unsorted(as.numeric(colnames(Mat1)))) {
             Mat1 <- Mat1[, NCOL(Mat1):1]
             if (!is.null(Ref1)) {
@@ -120,38 +123,31 @@ corr2d <-
             cat(c(format(Sys.time(), "%X -"), "Interpolate Time from",
                   min(Time), "to", max(Time), "\n", "to obtain", N,
                   "equidistant datapoints for FFT", "\n"))
-            MAT <- c()
             TIME <- seq(min(Time), max(Time), length.out = N)
-            for (i in 1:NCOL(Mat1)) {
-                tmp <- Int(x = Time, y = Mat1[, i])
-                MAT <- cbind(MAT, tmp(TIME))
-            }
-            Mat1 <- MAT
+            
+            tmp <- apply(Mat1, 2, function(y) Int(x = Time, y = y))
+            Mat1 <- sapply(tmp, function(x) x(TIME))
+            
             if (Het == FALSE) {
                 Mat2 <- Mat1
             } else {
-                MAT <- c()
-                for (i in 1:NCOL(Mat2)) {
-                    tmp <- Int(x = Time, y = Mat2[, i])
-                    MAT <- cbind(MAT, tmp(TIME))
-                }
-                Mat2 <- MAT
+                tmp <- apply(Mat2, 2, function(y) Int(x = Time, y = y))
+                Mat2 <- sapply(tmp, function(x) x(TIME))
             }
+            Time <- TIME
         }
-        # Get perturbation variable from rownames
+        # Get perturbation variables from rownames
         if (is.null(Time) == TRUE && is.null(rownames(Mat1)) == FALSE) {
             Time <- as.numeric(rownames(Mat1))
-        } else {
-            Time <- NULL
         }
         
-        # Substract reference -------------------------------------------------
+        # Subtract reference -------------------------------------------------
         if (is.null(Ref1)) {
             cat(c(format(Sys.time(), "%X -"), "using mean values as reference\n"))
             Ref1 <- colMeans(Mat1)
             Ref2 <- colMeans(Mat2)
         }
-        Mat1<-sweep(Mat1, 2, Ref1, "-")
+        Mat1 <- sweep(Mat1, 2, Ref1, "-")
         if (Het == FALSE) {
             Mat2 <- Mat1
         } else {
@@ -167,26 +163,27 @@ corr2d <-
             Mat2 <- Mat2 / (sd2^scaling)
         }
         
-        # Do fft for every wavenumber in both Mattices to obtain frequency ----
+        # Do fft for every wavenumber in both matrices to obtain frequency ----
         # dependent vectors for every wavenumber and scalar-multiply them -----
         # for every point in the 2D-correlation spectrum ----------------------
+        i <- NULL # Dummy to trick R CMD check 
         FT <- NULL
         cat(c(format(Sys.time(), "%X -"), "Fast Fourier Transformation and Multiplication \n",
-              "to obtain a",D1[2], "x", D2[2], "Correlation-Matrix","\n"))
+              "to obtain a", D1[2], "x", D2[2], "Correlation-Matrix", "\n"))
         
         FT <- matrix(NA, NCOL(Mat1), NCOL(Mat2))
         ft1 <- foreach::foreach(i = 1:NCOL(Mat1), .combine = 'cbind') %dopar% {
-            fft(Mat1[, i])[1:NROW(Mat1) %/% 2]
+            fft(Mat1[, i])[1:(NROW(Mat1) - 1) %/% 2 + 1]
         }
         if (Het == FALSE) {
             ft2 <- ft1
         } else {
             ft2 <- foreach::foreach(i = 1:NCOL(Mat2), .combine = 'cbind') %dopar% {
-                fft(Mat2[, i])[1:NROW(Mat2) %/% 2]
+                fft(Mat2[, i])[1:(NROW(Mat2) - 1) %/% 2 + 1]
             }
         }
         
-        FT<-matrix(Norm * parallel::parCapply(cl, ft1, get("%*%"), Conj(ft2)), NCOL(ft1), NCOL(ft2), byrow = T)
+        FT <- matrix(Norm * parallel::parCapply(cl, ft1, get("%*%"), Conj(ft2)), NCOL(ft1), NCOL(ft2), byrow = T)
         cat(c(format(Sys.time(), "%X -"), "Done\n"))
         
         Obj<-list(FT = FT, Ref1 = Ref1, Ref2 = Ref2,
@@ -217,17 +214,17 @@ corr2d <-
 
 #' @export
 summary.corr2d <- function(object, ...)
-    {
-        cat(c(NROW(object$FT), "x", NCOL(object$FT), if (object$Het == TRUE){"Hetero"} else {"Homo"}, "correlation spectra\n"))
-        if (object$Het == TRUE) {
-            cat(c("Spectral variable 1:", min(object$Wave1), "-", max(object$Wave1), "\n"))
-            cat(c("Spectral variable 2:", min(object$Wave2), "-", max(object$Wave2), "\n"))
-        } else {
-            cat(c("Spectral variable:", min(object$Wave1), "-", max(object$Wave1), "\n"))
-        }
-        if (!is.null(object$Time)) {
-            cat(c("Perturbation variable:", length(object$Time), "values,", min(object$Time), "-", max(object$Time), "\n"))
-        }
+{
+    cat(c(NROW(object$FT), "x", NCOL(object$FT), if (object$Het == TRUE){"Hetero"} else {"Homo"}, "correlation spectra\n"))
+    if (object$Het == TRUE) {
+        cat(c("Spectral variable 1:", min(object$Wave1), "-", max(object$Wave1), "\n"))
+        cat(c("Spectral variable 2:", min(object$Wave2), "-", max(object$Wave2), "\n"))
+    } else {
+        cat(c("Spectral variable:", min(object$Wave1), "-", max(object$Wave1), "\n"))
+    }
+    if (!is.null(object$Time)) {
+        cat(c("Perturbation variable:", length(object$Time), "values,", min(object$Time), "-", max(object$Time), "\n"))
+    }
     
 }
 
@@ -252,6 +249,6 @@ summary.corr2d <- function(object, ...)
 #'
 #' @export
 is.corr2d <- function(x)
-    {
+{
     inherits(x, "corr2d", which = FALSE)
-    }
+}
