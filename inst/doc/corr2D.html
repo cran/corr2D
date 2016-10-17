@@ -12,7 +12,7 @@
 
 <meta name="author" content="Robert Geitner, Robby Fritzsch and Thomas Bocklitz" />
 
-<meta name="date" content="2016-07-26" />
+<meta name="date" content="2016-10-17" />
 
 <title>Implementation of 2D Correlation Analysis</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Implementation of 2D Correlation Analysis</h1>
 <h4 class="author"><em>Robert Geitner, Robby Fritzsch and Thomas Bocklitz</em></h4>
-<h4 class="date"><em>2016-07-26</em></h4>
+<h4 class="date"><em>2016-10-17</em></h4>
 
 
 
@@ -88,9 +88,9 @@ The package also features an example dataset containing preprocessed FT-Raman sp
 <p>As the next step we calculate the homo 2D correlation spectra of the FuranMale dataset using the function corr2d() and the first spectrum of the dataset as reference spectrum.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">twod &lt;-<span class="st"> </span><span class="kw">corr2d</span>(FuranMale, <span class="dt">Ref1 =</span> FuranMale[<span class="dv">1</span>, ], <span class="dt">corenumber =</span> <span class="dv">1</span>)
 <span class="co">#&gt; HOMO-Correlation: 1 cores used for calculation</span>
-<span class="co">#&gt; 14:31:51 - Fast Fourier Transformation and Multiplication </span>
-<span class="co">#&gt;  to obtain a 145 x 145 Correlation-Matrix </span>
-<span class="co">#&gt; 14:31:51 - Done</span></code></pre></div>
+<span class="co">#&gt; 15:59:49 - Fast Fourier Transformation and multiplication </span>
+<span class="co">#&gt;  to obtain a 145 x 145 correlation matrix </span>
+<span class="co">#&gt; 15:59:49 - Done</span></code></pre></div>
 <p>The last step is to plot the resulting 2D correlation spectra. As an example we plot the synchronous correlation spectrum of the FuranMale dataset. The appearance of the 2D plot can be altered by i.e. using the xlab and ylab options to control the labels at the x- and y-axes.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot_corr2d</span>(twod, <span class="dt">xlab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;relative Wavenumber&quot;</span> /<span class="st"> </span>cm^-<span class="dv">1</span>)),
             <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;relative Wavenumber&quot;</span> /<span class="st"> </span>cm^-<span class="dv">1</span>)))</code></pre></div>
