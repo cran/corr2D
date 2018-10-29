@@ -4,12 +4,13 @@
 \alias{plot_corr2d}
 \title{Plot two-dimensional correlation spectra.}
 \usage{
-plot_corr2d(Obj, what = Re(Obj$FT), specx = Obj$Ref1, specy = Obj$Ref2,
-  xlim = NULL, ylim = NULL, xlab = expression(nu[1]),
-  ylab = expression(nu[2]), Contour = TRUE, axes = 3, Legend = TRUE,
-  N = 20, zlim = NULL, Cutout = NULL, col = par("col"),
-  lwd = par("lwd"), lwd.axis = NULL, lwd.spec = NULL, cex.leg = NULL,
-  at.xaxs = NULL, label.xaxs = TRUE, at.yaxs = NULL, label.yaxs = TRUE,
+plot_corr2d(Obj, what = Re(Obj$FT), specx = Obj$Ref1,
+  specy = Obj$Ref2, xlim = NULL, ylim = NULL,
+  xlab = expression(nu[1]), ylab = expression(nu[2]), Contour = TRUE,
+  axes = 3, Legend = TRUE, N = 20, zlim = NULL, Cutout = NULL,
+  col = par("col"), lwd = par("lwd"), lwd.axis = NULL,
+  lwd.spec = NULL, cex.leg = NULL, at.xaxs = NULL,
+  label.xaxs = TRUE, at.yaxs = NULL, label.yaxs = TRUE,
   line.xlab = 3.5, line.ylab = 3.5, ...)
 }
 \arguments{
