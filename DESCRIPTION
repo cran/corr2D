@@ -1,8 +1,8 @@
 Package: corr2D
 Type: Package
 Title: Implementation of 2D Correlation Analysis in R
-Version: 0.4.0
-Date: 2019-07-01
+Version: 1.0.0
+Date: 2019-07-29
 Authors@R: c(
     person("Robert", "Geitner", email = "r.geitner@uu.nl", role = c("cre","aut")),
     person("Robby", "Fritzsch", role = "aut"),
@@ -24,11 +24,11 @@ Encoding: UTF-8
 Suggests: knitr, rmarkdown, R.rsp, testthat
 VignetteBuilder: R.rsp
 NeedsCompilation: no
-Packaged: 2019-07-01 12:45:04 UTC; geitn001
+Packaged: 2019-07-29 12:26:52 UTC; geitn001
 Author: Robert Geitner [cre, aut],
   Robby Fritzsch [aut],
   Thomas Bocklitz [aut],
   Juergen Popp [ctb, cph]
 Maintainer: Robert Geitner <r.geitner@uu.nl>
 Repository: CRAN
-Date/Publication: 2019-07-01 13:00:03 UTC
+Date/Publication: 2019-07-29 12:40:06 UTC
